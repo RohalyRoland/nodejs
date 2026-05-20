@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backend Fejlesztés - Felkészítő Tananyag</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #fdfbf7;
+            --card-bg: #ffffff;
+            --accent-warm: #d97706;
+            --text-main: #451a03;
+            --nav-bg: #faf7f2;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+
+        .module-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .module-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .active-tab {
+            border-bottom: 3px solid var(--accent-warm);
+            color: var(--accent-warm);
+            font-weight: bold;
+        }
+
+        .step-circle {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: var(--accent-warm);
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- Chosen Palette: Warm Neutrals & Sunset Amber (Calm and professional) -->
+    
+    <!-- Application Structure Plan: 
+         Az alkalmazás egy dashboard-szerű struktúrára épül, amely 4 fő nézetre oszlik:
+         1. Áttekintés: Vizuális kedvcsináló és modul-statisztika.
+         2. Tananyag Modulok: Interaktív kártyák a részletes leírásokkal.
+         3. CRUD Szimulátor: Dinamikus táblázat, ami segít megérteni a HTTP-SQL kapcsolatot.
+         4. Projekt Tervező: Interaktív checklist a zárófeladathoz.
+         Azért ezt választottam, mert a backend elmélet száraz lehet; az interakció és a vizuális visszacsatolás segít a koncepciók rögzülésében.
+    -->
+
+    <!-- Visualization & Content Choices: 
+         - Modul Súlyozás (Chart.js): A tananyag nehézségének/időigényének vizuális reprezentációja.
+         - HTTP Életút (HTML/CSS): A kliens-szerver-adatbázis út szemléltetése Mermaid nélkül.
+         - Dinamikus CRUD Mátrix (JS/Tailwind): Kattintható sorok, amelyek magyarázatot adnak.
+         - Checklist (JS): Állapotmentés nélküli interaktív projektkövető.
+         CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
+    -->
+
+    <nav class="sticky top-0 z-50 bg-[#faf7f2] border-b border-orange-100 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <span class="text-xl font-bold text-amber-900">Backend<span class="text-amber-600">Mastery</span></span>
+                <div class="flex space-x-8 text-sm uppercase tracking-wider">
+                    <button onclick="switchTab('overview')" id="tab-overview" class="tab-btn active-tab py-5">Áttekintés</button>
+                    <button onclick="switchTab('modules')" id="tab-modules" class="tab-btn py-5">Modulok</button>
+                    <button onclick="switchTab('crud')" id="tab-crud" class="tab-btn py-5">CRUD Mátrix</button>
+                    <button onclick="switchTab('project')" id="tab-project" class="tab-btn py-5">Záróprojekt</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        
+        <!-- SECTION: OVERVIEW -->
+        <section id="content-overview" class="content-section">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl font-extrabold text-amber-900 mb-4">Felkészülés a 13. Évfolyamra</h1>
+                <p class="text-lg text-stone-600 max-w-2xl mx-auto">
+                    Ez az interaktív útmutató segít elsajátítani a Node.js, Express és MySQL alapjait. 
+                    Fedezd fel a modulokat, ismerd meg az adatok útját, és tervezd meg a saját API-dat!
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 items-center mb-16">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-orange-50">
+                    <h3 class="text-xl font-semibold mb-4 text-amber-800">Tananyag Fókuszpontok</h3>
+                    <div class="chart-container">
+                        <canvas id="topicChart"></canvas>
+                    </div>
+                </div>
+                <div class="space-y-6">
+                    <h3 class="text-2xl font-bold text-amber-900">Miért a Backend?</h3>
+                    <div class="flex gap-4">
+                        <div class="step-circle">1</div>
+                        <div>
+                            <p class="font-bold">Logikai Központ</p>
+                            <p class="text-sm text-stone-600">Itt dől el, hogyan viselkedik az alkalmazás, és mi történik az adatokkal.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="step-circle">2</div>
+                        <div>
+                            <p class="font-bold">Adatbiztonság</p>
+                            <p class="text-sm text-stone-600">A szerver feladata megvédeni a felhasználók adatait az illetéktelenektől.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="step-circle">3</div>
+                        <div>
+                            <p class="font-bold">Skálázhatóság</p>
+                            <p class="text-sm text-stone-600">A jól megtervezett API-k több ezer kérést is képesek kiszolgálni másodpercenként.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: MODULES -->
+        <section id="content-modules" class="content-section hidden">
+            <div class="mb-10">
+                <h2 class="text-3xl font-bold text-amber-900">Tanulási Útvonal</h2>
+                <p class="text-stone-600 mt-2">Kattints a kártyákra a részletekért. Minden modul egymásra épül.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6" id="module-grid">
+                <!-- Modules generated via JS -->
+            </div>
+
+            <div id="module-detail" class="mt-12 bg-white p-8 rounded-2xl border-l-4 border-amber-600 shadow-md hidden">
+                <h3 id="detail-title" class="text-2xl font-bold text-amber-900 mb-4"></h3>
+                <div id="detail-content" class="text-stone-700 leading-relaxed"></div>
+                <button onclick="closeDetail()" class="mt-6 text-amber-600 font-semibold hover:underline">Vissza a listához</button>
+            </div>
+        </section>
+
+        <!-- SECTION: CRUD MATRIX -->
+        <section id="content-crud" class="content-section hidden">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-amber-900">Az Adatok Körforgása (CRUD)</h2>
+                <p class="text-stone-600 mt-2">A RESTful API alapja a HTTP metódusok és az SQL parancsok pontos párosítása.</p>
+            </div>
+
+            <div class="overflow-x-auto bg-white rounded-xl shadow-sm border border-orange-50">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-amber-50">
+                        <tr>
+                            <th class="p-4 border-b font-bold">Művelet</th>
+                            <th class="p-4 border-b font-bold">HTTP Metódus</th>
+                            <th class="p-4 border-b font-bold">Endpoint Példa</th>
+                            <th class="p-4 border-b font-bold">SQL Művelet</th>
+                            <th class="p-4 border-b font-bold text-center">Siker Kód</th>
+                        </tr>
+                    </thead>
+                    <tbody id="crud-table-body">
+                        <!-- Content via JS -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="crud-explainer" class="mt-8 p-6 bg-orange-50 rounded-xl border border-orange-100">
+                <p class="italic text-amber-800">Tipp: Kattints egy sorra a táblázatban a részletes technikai magyarázatért!</p>
+            </div>
+        </section>
+
+        <!-- SECTION: PROJECT -->
+        <section id="content-project" class="content-section hidden">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="md:col-span-2">
+                    <h2 class="text-3xl font-bold text-amber-900 mb-6">Záróprojekt: Könyvtár Kezelő</h2>
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-orange-50">
+                        <h4 class="font-bold text-amber-800 mb-4 uppercase tracking-tighter">Projekt Check-list</h4>
+                        <div id="project-checklist" class="space-y-4">
+                            <!-- JS will populate -->
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-stone-100 p-6 rounded-2xl h-fit">
+                    <h4 class="font-bold text-amber-900 mb-4">Elvárt Technológiai Stack</h4>
+                    <ul class="space-y-3 text-sm">
+                        <li class="flex items-center gap-2"><span>&#10003;</span> Node.js runtime</li>
+                        <li class="flex items-center gap-2"><span>&#10003;</span> Express.js framework</li>
+                        <li class="flex items-center gap-2"><span>&#10003;</span> MySQL + mysql2 driver</li>
+                        <li class="flex items-center gap-2"><span>&#10003;</span> dotenv a biztonságért</li>
+                        <li class="flex items-center gap-2"><span>&#10003;</span> nodemon fejlesztéshez</li>
+                    </ul>
+                    <div class="mt-8 p-4 bg-white rounded-lg border border-stone-200">
+                        <p class="text-xs font-mono text-stone-500">Adatbázis név: konyvtar</p>
+                        <p class="text-xs font-mono text-stone-500">Tábla: konyvek</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="mt-20 py-10 border-t border-orange-100 text-center text-stone-500 text-sm">
+        <p>&copy; 2024 Backend Tananyag - Készült a 13. évfolyamra való felkészüléshez</p>
+        <p class="mt-2 italic">A tudás a szerveren kezdődik.</p>
+    </footer>
+
+    <script>
+        // Data Structures
+        const modules = [
+            {
+                id: 1,
+                title: "Alapozás & Node.js",
+                summary: "A V8 motor és a non-blocking I/O világa.",
+                content: "Ebben a modulban megismerjük a Node.js ökoszisztémát. Megtanuljuk használni az NPM-et, kezelni a package.json-t, és megértjük, miért forradalmi az eseményvezérelt modell. Itt rakjuk le a HTTP alapjait is: kérés, válasz és fejlécek."
+            },
+            {
+                id: 2,
+                title: "Express.js Szerver",
+                summary: "Minimalista framework a gyors fejlesztéshez.",
+                content: "Az Express segít abban, hogy ne kelljen a nulláról megírni mindent. Megtanuljuk a routingot (útvonalválasztás), a middleware-ek (köztes szoftverek) használatát, és azt, hogyan dolgozzuk fel a JSON formátumú bemeneti adatokat."
+            },
+            {
+                id: 3,
+                title: "MySQL Adatbázis",
+                summary: "Perzisztens tárolás és SQL lekérdezések.",
+                content: "Az adatokat MySQL-ben tároljuk. Megtanuljuk a Connection Pool használatát a stabilitás érdekében, és az async/await mintát a lekérdezések kezeléséhez. Kiemelt figyelmet fordítunk a .env fájlokra és a biztonságra."
+            },
+            {
+                id: 4,
+                title: "REST API Tervezés",
+                summary: "Szabványos végpontok és tiszta architektúra.",
+                content: "A RESTful elvek szerint építjük fel az API-t. Erőforrás-központú URL-eket tervezünk, és a megfelelő HTTP igéket használjuk a műveletekhez. Megértjük, miért fontos a konzisztens válaszformátum."
+            },
+            {
+                id: 5,
+                title: "Validáció & Hibakezelés",
+                summary: "Stabil kód, ami nem omlik össze.",
+                content: "Egy profi fejlesztő felkészül a hibákra. Megtanuljuk ellenőrizni a bemeneti adatokat (üres mezők, típusok) és globális hibakezelő middleware-t írunk a szerveroldali kivételek elfogására."
+            }
+        ];
+
+        const crudData = [
+            { op: "Létrehozás", method: "POST", endpoint: "/api/items", sql: "INSERT INTO", code: "201", desc: "Új adatsort adunk az adatbázishoz. Mindig 201-es kódot küldünk, ha a létrehozás sikeres volt." },
+            { op: "Olvasás (összes)", method: "GET", endpoint: "/api/items", sql: "SELECT *", code: "200", desc: "Lekérjük a tábla összes rekordját. A választ általában JSON tömbként küldjük vissza." },
+            { op: "Olvasás (egy)", method: "GET", endpoint: "/api/items/:id", sql: "SELECT WHERE", code: "200", desc: "Egy konkrét elemet keresünk az azonosítója (ID) alapján. Ha nincs meg, 404-es hibát dobunk." },
+            { op: "Módosítás", method: "PUT", endpoint: "/api/items/:id", sql: "UPDATE", code: "200/204", desc: "Egy meglévő elemet írunk felül. Fontos a beérkező adatok alapos ellenőrzése." },
+            { op: "Törlés", method: "DELETE", endpoint: "/api/items/:id", sql: "DELETE", code: "200/204", desc: "Eltávolítunk egy rekordot. Biztonsági okokból érdemes ellenőrizni, létezik-e az elem törlés előtt." }
+        ];
+
+        const projectTasks = [
+            "MySQL adatbázis és 'konyvek' tábla létrehozása",
+            "Node.js projekt inicializálása és függőségek telepítése",
+            "Környezeti változók (.env) beállítása",
+            "Express szerver alapváz és middleware-ek konfigurálása",
+            "Adatbázis kapcsolati modul elkészítése",
+            "CRUD végpontok implementálása",
+            "Végpontok tesztelése Postman vagy Bruno segítségével"
+        ];
+
+        // UI Logic
+        function switchTab(tabId) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active-tab'));
+            
+            document.getElementById(`content-${tabId}`).classList.remove('hidden');
+            document.getElementById(`tab-${tabId}`).classList.add('active-tab');
+            
+            if (tabId === 'overview') initChart();
+        }
+
+        function renderModules() {
+            const grid = document.getElementById('module-grid');
+            grid.innerHTML = modules.map(m => `
+                <div onclick="showDetail(${m.id})" class="module-card bg-white p-6 rounded-2xl border border-orange-50 cursor-pointer">
+                    <div class="text-amber-600 font-bold text-xs uppercase mb-2">Modul ${m.id}</div>
+                    <h3 class="text-lg font-bold text-amber-900 mb-2">${m.title}</h3>
+                    <p class="text-stone-500 text-sm">${m.summary}</p>
+                </div>
+            `).join('');
+        }
+
+        function showDetail(id) {
+            const module = modules.find(m => m.id === id);
+            document.getElementById('module-grid').classList.add('hidden');
+            document.getElementById('module-detail').classList.remove('hidden');
+            document.getElementById('detail-title').innerText = `${id}. Modul: ${module.title}`;
+            document.getElementById('detail-content').innerText = module.content;
+        }
+
+        function closeDetail() {
+            document.getElementById('module-grid').classList.remove('hidden');
+            document.getElementById('module-detail').classList.add('hidden');
+        }
+
+        function renderCRUD() {
+            const tbody = document.getElementById('crud-table-body');
+            tbody.innerHTML = crudData.map(row => `
+                <tr onclick="explainCRUD('${row.method}')" class="hover:bg-amber-50 cursor-pointer transition-colors border-b border-orange-50">
+                    <td class="p-4 font-medium">${row.op}</td>
+                    <td class="p-4"><span class="px-2 py-1 bg-amber-100 text-amber-800 rounded text-xs font-bold">${row.method}</span></td>
+                    <td class="p-4 font-mono text-sm">${row.endpoint}</td>
+                    <td class="p-4 font-mono text-xs text-blue-600">${row.sql}</td>
+                    <td class="p-4 text-center font-bold text-green-600">${row.code}</td>
+                </tr>
+            `).join('');
+        }
+
+        function explainCRUD(method) {
+            const info = crudData.find(d => d.method === method);
+            const explainer = document.getElementById('crud-explainer');
+            explainer.innerHTML = `
+                <h4 class="font-bold text-amber-900 mb-2">${method} művelet részletei:</h4>
+                <p class="text-amber-800">${info.desc}</p>
+            `;
+        }
+
+        function renderChecklist() {
+            const list = document.getElementById('project-checklist');
+            list.innerHTML = projectTasks.map((task, idx) => `
+                <label class="flex items-center gap-4 p-3 hover:bg-stone-50 rounded-lg cursor-pointer transition-colors border border-transparent hover:border-stone-200">
+                    <input type="checkbox" class="w-5 h-5 accent-amber-600">
+                    <span class="text-stone-700">${task}</span>
+                </label>
+            `).join('');
+        }
+
+        let topicChartInstance = null;
+        function initChart() {
+            const ctx = document.getElementById('topicChart').getContext('2d');
+            if (topicChartInstance) topicChartInstance.destroy();
+
+            topicChartInstance = new Chart(ctx, {
+                type: 'polarArea',
+                data: {
+                    labels: ['Node.js alapok', 'Express API', 'MySQL SQL', 'Biztonság', 'Hibakezelés'],
+                    datasets: [{
+                        label: 'Tanulási súlyozás',
+                        data: [15, 25, 30, 20, 10],
+                        backgroundColor: [
+                            'rgba(217, 119, 6, 0.2)',
+                            'rgba(217, 119, 6, 0.4)',
+                            'rgba(217, 119, 6, 0.6)',
+                            'rgba(217, 119, 6, 0.8)',
+                            'rgba(217, 119, 6, 0.9)'
+                        ],
+                        borderColor: '#d97706',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    },
+                    scales: {
+                        r: { ticks: { display: false } }
+                    }
+                }
+            });
+        }
+
+        // Initialize everything
+        window.onload = () => {
+            renderModules();
+            renderCRUD();
+            renderChecklist();
+            initChart();
+        };
+    </script>
+</body>
+</html>

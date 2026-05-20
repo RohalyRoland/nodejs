@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backend Elméleti Mélymerülés</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        :root {
+            --slate-50: #f8fafc;
+            --indigo-900: #1e1b4b;
+            --emerald-600: #059669;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--slate-50);
+            color: #334155;
+        }
+        .theory-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .theory-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 2rem auto;
+            height: 400px;
+        }
+        .progress-bar {
+            height: 4px;
+            background: #e2e8f0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+        }
+        .active-module {
+            border-left: 4px solid #4f46e5;
+            background-color: #eef2ff;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+<div id="scroll-progress" class="progress-bar w-0 bg-indigo-600"></div>
+
+<!-- Chosen Palette: Indigo & Emerald (Professzionális, tudományos és megbízható hatás) -->
+
+<!-- Application Structure Plan: 
+     Az alkalmazás egy vertikális tudásbázis, amely a lineáris tanulást támogatja mély elméleti tartalommal. 
+     A bal oldali navigáció követi a haladást, a jobb oldali tartalom pedig strukturált "Deep Dive" szekciókra oszlik.
+     Azért ezt választottam, mert az elméleti anyag sűrű, így fontos a vizuális tagolás és a könnyű navigáció.
+-->
+
+<!-- Visualization & Content Choices: 
+     - Rendszer-komplexitási mátrix (Chart.js): A különböző backend rétegek egymásra épülésének szemléltetése.
+     - Interaktív Fogalomtár (JS): Kattintható fogalmak részletesebb kifejtéssel.
+     - Progress Indicator: Vizuális visszacsatolás az olvasási folyamatról.
+     CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
+-->
+
+<div class="flex flex-col lg:flex-row">
+    
+    <!-- Sidebar -->
+    <aside class="lg:w-80 h-auto lg:h-screen lg:sticky lg:top-0 bg-white border-r border-slate-200 p-8">
+        <div class="mb-8">
+            <h1 class="text-xl font-bold text-indigo-950 flex items-center gap-2">
+                <span class="text-2xl">🧠</span> Backend DeepDive
+            </h1>
+            <p class="text-xs text-slate-500 mt-2 font-semibold uppercase tracking-tighter">13. évfolyam felkészítő</p>
+        </div>
+
+        <nav class="space-y-1">
+            <a href="#intro" class="nav-item block p-3 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors">Bevezetés</a>
+            <a href="#modul1" class="nav-item block p-3 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors">1. Architektúra & Node.js</a>
+            <a href="#modul2" class="nav-item block p-3 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors">2. Kommunikációs Protokollok</a>
+            <a href="#modul3" class="nav-item block p-3 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors">3. Szerveroldali Logika</a>
+            <a href="#modul4" class="nav-item block p-3 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors">4. Adatkezelés & Integritás</a>
+            <a href="#modul5" class="nav-item block p-3 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors">5. API Tervezési Minták</a>
+        </nav>
+
+        <div class="mt-12 p-4 bg-emerald-50 rounded-xl">
+            <p class="text-xs text-emerald-800 font-bold mb-2">Önellenőrző kérdés:</p>
+            <p id="quiz-question" class="text-xs text-emerald-700 italic">"Mi a különbség az állapottartó és állapotmentes protokoll között?"</p>
+            <button onclick="nextQuiz()" class="mt-3 text-[10px] bg-emerald-600 text-white px-3 py-1 rounded-full">Következő kérdés</button>
+        </div>
+    </aside>
+
+    <!-- Content -->
+    <main class="flex-1 p-6 lg:p-16 max-w-5xl mx-auto">
+        
+        <!-- INTRO -->
+        <section id="intro" class="mb-24 scroll-mt-20">
+            <div class="bg-indigo-900 text-white p-10 rounded-3xl mb-12">
+                <h2 class="text-4xl font-bold mb-6">Az elmélet az alapja a stabil kódnak.</h2>
+                <p class="text-indigo-100 text-lg leading-relaxed">
+                    A backend fejlesztés nem csupán végpontok gépelése. Ez egy mérnöki tudomány, amely az erőforrások elosztásáról, 
+                    a biztonságról és az adatok konzisztenciájáról szól. Ebben a tudástárban a mintakódok helyett a koncepciókat 
+                    vizsgáljuk meg, hogy értsd: mi történik a motorháztető alatt.
+                </p>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="architectureChart"></canvas>
+            </div>
+        </section>
+
+        <!-- MODULE 1 -->
+        <section id="modul1" class="mb-24 scroll-mt-20">
+            <span class="text-indigo-600 font-bold text-sm tracking-widest uppercase">1. Modul</span>
+            <h3 class="text-3xl font-bold text-slate-900 mt-2 mb-8">Node.js Architektúra és Környezet</h3>
+            
+            <div class="space-y-8">
+                <div class="theory-card p-8">
+                    <h4 class="text-xl font-bold mb-4 text-indigo-900">Eseményhurok (Event Loop)</h4>
+                    <p class="leading-relaxed">
+                        A Node.js legfontosabb elméleti alapja a <strong>Single-Threaded Event Loop</strong>. Míg a hagyományos szerverek 
+                        (mint az Apache) minden kéréshez új szálat (thread) indítanak, a Node egyetlen szálon kezeli a kéréseket. 
+                        A titok a <em>nem blokkoló I/O</em> műveletekben rejlik: amikor a szerver fájlra vár vagy adatbázist kérdez le, 
+                        nem áll meg, hanem félreteszi a kérést, és foglalkozik a következővel, amíg az eredmény meg nem érkezik.
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-white border border-slate-200 p-6 rounded-xl">
+                        <h5 class="font-bold mb-2">V8 Motor</h5>
+                        <p class="text-sm text-slate-600 italic">A Google által fejlesztett motor, ami a JavaScriptet gépi kóddá fordítja valós időben (JIT), rendkívüli sebességet biztosítva a szerveroldalon.</p>
+                    </div>
+                    <div class="bg-white border border-slate-200 p-6 rounded-xl">
+                        <h5 class="font-bold mb-2">NPM Ökoszisztéma</h5>
+                        <p class="text-sm text-slate-600 italic">A világ legnagyobb csomagkezelője, ami lehetővé teszi a moduláris fejlesztést és a függőségek precíz kezelését a package.json fájlon keresztül.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 2 -->
+        <section id="modul2" class="mb-24 scroll-mt-20">
+            <span class="text-indigo-600 font-bold text-sm tracking-widest uppercase">2. Modul</span>
+            <h3 class="text-3xl font-bold text-slate-900 mt-2 mb-8">Kommunikációs Protokollok: A HTTP Mélységei</h3>
+            
+            <div class="space-y-6">
+                <div class="theory-card p-8 border-l-8 border-indigo-200">
+                    <h4 class="text-xl font-bold mb-4">Az Állapotmentesség (Statelessness)</h4>
+                    <p class="leading-relaxed">
+                        A HTTP protokoll állapotmentes. Ez azt jelenti, hogy a szerver "nem emlékszik" az előző kérésre. 
+                        Minden kérésnek tartalmaznia kell minden olyan információt, ami a feldolgozásához szükséges. 
+                        Bár ez nehezíti a bejelentkezés kezelését (ezért használunk tokeneket), óriási előnye a skálázhatóság: 
+                        bármelyik szerver válaszolhat bármelyik kérésre.
+                    </p>
+                </div>
+
+                <div class="bg-indigo-50 p-6 rounded-2xl">
+                    <h5 class="font-bold text-indigo-900 mb-3">HTTP Verbs vs. Semantics</h5>
+                    <p class="text-sm leading-relaxed">
+                        A GET metódusnak <strong>idempotensnek</strong> kell lennie: akárhányszor hívjuk meg, nem változtathatja meg a szerver állapotát. 
+                        A POST ezzel szemben erőforrást hoz létre. A PUT és DELETE szintén fontos szemantikai jelentéssel bírnak, 
+                        melyek betartása alapvető a profi API tervezésben.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 3 -->
+        <section id="modul3" class="mb-24 scroll-mt-20">
+            <span class="text-indigo-600 font-bold text-sm tracking-widest uppercase">3. Modul</span>
+            <h3 class="text-3xl font-bold text-slate-900 mt-2 mb-8">Szerveroldali Logika és Middleware Architektúra</h3>
+            
+            <div class="theory-card p-8">
+                <h4 class="text-xl font-bold mb-6">Chain of Responsibility (Felelősségi lánc)</h4>
+                <p class="mb-6 leading-relaxed">
+                    Az Express.js a <strong>middleware</strong> mintára épül. Ez egy olyan szoftveres láncolat, ahol a kérés végighalad több állomáson, 
+                    mielőtt elérné a végső logikát. Minden middleware három dologra képes:
+                </p>
+                <ul class="space-y-4 text-sm">
+                    <li class="flex items-center gap-3 bg-slate-50 p-3 rounded-lg">
+                        <span class="text-indigo-600 font-bold">1.</span>
+                        <span>Módosíthatja a kérés vagy a válasz objektumot (pl. parzolja a JSON-t).</span>
+                    </li>
+                    <li class="flex items-center gap-3 bg-slate-50 p-3 rounded-lg">
+                        <span class="text-indigo-600 font-bold">2.</span>
+                        <span>Megszakíthatja a folyamatot és választ küldhet (pl. hiba vagy jogosultság hiánya esetén).</span>
+                    </li>
+                    <li class="flex items-center gap-3 bg-slate-50 p-3 rounded-lg">
+                        <span class="text-indigo-600 font-bold">3.</span>
+                        <span>Továbbadhatja a vezérlést a következő állomásnak a <code>next()</code> hívással.</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- MODULE 4 -->
+        <section id="modul4" class="mb-24 scroll-mt-20">
+            <span class="text-indigo-600 font-bold text-sm tracking-widest uppercase">4. Modul</span>
+            <h3 class="text-3xl font-bold text-slate-900 mt-2 mb-8">Adatkezelés: Relációk és Biztonság</h3>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="theory-card p-6">
+                    <h4 class="font-bold text-lg mb-4 text-emerald-700">Adatbázis Kapcsolati Pool</h4>
+                    <p class="text-sm leading-relaxed">
+                        A MySQL kapcsolat létrehozása drága művelet időben és erőforrásban. A <strong>Pooling</strong> lényege, 
+                        hogy a szerver előre legyárt több kapcsolatot, és azokat "kölcsönadja" a kéréseknek. Amikor egy kérés végez, 
+                        nem zárja be a kapcsolatot, hanem visszateszi a közösbe. Ez kritikus a nagy terhelésű rendszereknél.
+                    </p>
+                </div>
+                <div class="theory-card p-6 border-t-4 border-red-400">
+                    <h4 class="font-bold text-lg mb-4 text-red-700">SQL Injection elleni védelem</h4>
+                    <p class="text-sm leading-relaxed">
+                        Az elméleti alap az <strong>adat és a kód szétválasztása</strong>. Soha nem fűzünk be stringként 
+                        felhasználói adatot a lekérdezésbe. A <em>Prepared Statements</em> (előkészített utasítások) használatával 
+                        a szerver először a parancs szerkezetét küldi el az adatbázisnak, majd külön az adatokat, 
+                        így a támadó nem tud rosszindulatú SQL parancsokat "becsempészni".
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 5 -->
+        <section id="modul5" class="mb-24 scroll-mt-20">
+            <span class="text-indigo-600 font-bold text-sm tracking-widest uppercase">5. Modul</span>
+            <h3 class="text-3xl font-bold text-slate-900 mt-2 mb-8">Modern API Tervezési Minták (REST)</h3>
+            
+            <div class="bg-white shadow-xl rounded-3xl overflow-hidden">
+                <div class="bg-indigo-950 text-white p-8">
+                    <h4 class="text-2xl font-bold mb-4">RESTful Architektúra</h4>
+                    <p class="text-indigo-200">A REpresentational State Transfer nem egy szabvány, hanem egy építészeti stílus.</p>
+                </div>
+                <div class="p-8 space-y-6">
+                    <div class="flex gap-4">
+                        <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center font-bold text-indigo-600 shrink-0">R</div>
+                        <div>
+                            <h5 class="font-bold uppercase text-xs text-slate-400 mb-1">Resources</h5>
+                            <p class="text-sm">Az URL-eknek főneveknek kell lenniük, amelyek erőforrásokat azonosítanak (pl. <code>/api/orders</code>), nem pedig cselekvéseknek.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center font-bold text-indigo-600 shrink-0">U</div>
+                        <div>
+                            <h5 class="font-bold uppercase text-xs text-slate-400 mb-1">Uniform Interface</h5>
+                            <p class="text-sm">Egységes felületet biztosítunk: az adatok formátuma (JSON) és a hibakezelés módja állandó a teljes alkalmazásban.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<footer class="bg-slate-900 text-slate-400 py-12 px-6 text-center">
+    <p class="text-sm">Ez az elméleti összefoglaló a 13. évfolyam vizsgakövetelményeihez igazodik.</p>
+    <p class="mt-2 font-bold text-indigo-400">Tudás | Biztonság | Skálázhatóság</p>
+</footer>
+
+<script>
+    // Scroll Progress
+    window.addEventListener('scroll', () => {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        document.getElementById("scroll-progress").style.width = scrolled + "%";
+
+        // Navigation Highlight
+        const sections = document.querySelectorAll('section');
+        const navItems = document.querySelectorAll('.nav-item');
+        
+        let current = "";
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            if (pageYOffset >= sectionTop - 100) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        navItems.forEach(item => {
+            item.classList.remove('active-module');
+            if (item.getAttribute('href').includes(current)) {
+                item.classList.add('active-module');
+            }
+        });
+    });
+
+    // Quiz Logic
+    const questions = [
+        "Mi a különbség az állapottartó és állapotmentes protokoll között?",
+        "Miért veszélyes, ha nem használunk Prepared Statements-t?",
+        "Mi a szerepe a next() függvénynek az Express middleware-ekben?",
+        "Hogyan segít a Connection Pool a szerver erőforrásainak kezelésében?",
+        "Milyen HTTP státuszkódot küldünk egy sikeres POST kérés után?",
+        "Mit jelent az, hogy egy HTTP metódus 'idempotens'?"
+    ];
+    let currentQuiz = 0;
+    function nextQuiz() {
+        currentQuiz = (currentQuiz + 1) % questions.length;
+        document.getElementById('quiz-question').innerText = `"${questions[currentQuiz]}"`;
+    }
+
+    // Chart Initialization
+    const initChart = () => {
+        const ctx = document.getElementById('architectureChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Node.js V8', 'Middleware Réteg', 'Üzleti Logika', 'Adatbázis Kapcsolat', 'API Interfész'],
+                datasets: [{
+                    label: 'Absztrakciós szint / Komplexitás',
+                    data: [95, 60, 85, 40, 70],
+                    backgroundColor: [
+                        '#1e1b4b', '#4f46e5', '#6366f1', '#10b981', '#059669'
+                    ],
+                    borderRadius: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'Backend Rendszerkomponensek Aránya', color: '#1e1b4b', font: { size: 16, weight: 'bold' } }
+                },
+                scales: {
+                    y: { beginAtZero: true, max: 100, ticks: { callback: value => value + '%' } }
+                }
+            }
+        });
+    };
+
+    window.onload = initChart;
+</script>
+
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</body>
+</html>

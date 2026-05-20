@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backend Programozás: Részletes Mintapéldatár</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --color-bg: #fdfaf6;
+            --color-primary: #8b5cf6;
+            --color-accent: #f59e0b;
+            --color-text: #1f2937;
+        }
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            scroll-behavior: smooth;
+        }
+        .code-block {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            font-family: 'Courier New', Courier, monospace;
+            overflow-x: auto;
+            border-left: 4px solid var(--color-primary);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+        .nav-link:hover {
+            color: var(--color-primary);
+            transform: translateX(5px);
+        }
+        .module-active {
+            border-left: 4px solid var(--color-primary);
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased">
+
+<!-- Chosen Palette: Warm Sand & Amethyst (Kellemes semleges háttér lila és borostyán hangsúlyokkal) -->
+
+<!-- Application Structure Plan: 
+     Az alkalmazás egy kétpaneles interaktív tanulási felületet valósít meg. 
+     Bal oldalon egy rögzített navigációs sáv található, amely a modulok között engedi a váltást. 
+     A jobb oldali fő tartalom dinamikusan frissül a JavaScript segítségével, megjelenítve az adott modul elméletét, 
+     kódpéldáit és magyarázatait. Ez a struktúra lehetővé teszi, hogy a diákok fókuszáltan, modulonként haladjanak, 
+     miközben bármikor visszatérhetnek az előző részekhez. A vizuális visszacsatolást a Chart.js biztosítja.
+-->
+
+<!-- Visualization & Content Choices: 
+     - Modul Teljesítmény Térkép (Chart.js): A tanulási görbe és a kódkomplexitás összehasonlítása.
+     - Interaktív Kód-váltó (JS): Dinamikus kódblokk frissítés tartalomvesztés nélkül.
+     - Checklist (HTML/CSS): Haladási napló a modulok végén.
+     - Ikonok: Unicode karakterek és Tailwind formázás (NO SVG).
+     CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
+-->
+
+<div class="min-h-screen flex flex-col md:flex-row">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="w-full md:w-72 bg-white border-r border-stone-200 p-6 flex-shrink-0 sticky top-0 h-auto md:h-screen">
+        <div class="mb-10">
+            <h1 class="text-2xl font-bold text-stone-800">Backend<span class="text-purple-600">Dev</span></h1>
+            <p class="text-xs text-stone-500 uppercase tracking-widest mt-1">12-13. Évfolyam Mentor</p>
+        </div>
+
+        <nav class="space-y-2">
+            <button onclick="loadModule(0)" id="btn-0" class="nav-link w-full text-left p-3 rounded-lg hover:bg-stone-50 flex items-center gap-3">
+                <span class="text-lg">🏠</span> Áttekintés
+            </button>
+            <div class="pt-4 pb-2 text-[10px] font-bold text-stone-400 uppercase tracking-wider">Modulok</div>
+            <button onclick="loadModule(1)" id="btn-1" class="nav-link w-full text-left p-3 rounded-lg hover:bg-stone-50 flex items-center gap-3">
+                <span class="text-lg">⚙️</span> 1. Környezet & Init
+            </button>
+            <button onclick="loadModule(2)" id="btn-2" class="nav-link w-full text-left p-3 rounded-lg hover:bg-stone-50 flex items-center gap-3">
+                <span class="text-lg">🚀</span> 2. Express Szerver
+            </button>
+            <button onclick="loadModule(3)" id="btn-3" class="nav-link w-full text-left p-3 rounded-lg hover:bg-stone-50 flex items-center gap-3">
+                <span class="text-lg">🗄️</span> 3. MySQL & SQL
+            </button>
+            <button onclick="loadModule(4)" id="btn-4" class="nav-link w-full text-left p-3 rounded-lg hover:bg-stone-50 flex items-center gap-3">
+                <span class="text-lg">🔗</span> 4. Full CRUD API
+            </button>
+            <button onclick="loadModule(5)" id="btn-5" class="nav-link w-full text-left p-3 rounded-lg hover:bg-stone-50 flex items-center gap-3">
+                <span class="text-lg">🛡️</span> 5. Hibakezelés
+            </button>
+        </nav>
+
+        <div class="mt-auto pt-10">
+            <div class="p-4 bg-purple-50 rounded-xl border border-purple-100">
+                <p class="text-xs text-purple-800 font-medium italic">"A backend a láthatatlan motor, ami a világot hajtja."</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 p-6 md:p-12 overflow-y-auto bg-[#fdfaf6]">
+        
+        <div id="module-container">
+            <!-- Dynamic Content Injected Here -->
+            <div id="content-intro" class="max-w-4xl">
+                <h2 class="text-4xl font-extrabold text-stone-900 mb-6">Üdvözöllek a Backend Világában!</h2>
+                <p class="text-lg text-stone-600 mb-8 leading-relaxed">
+                    Ez a felület azért jött létre, hogy segítsen neked áthidalni a 12. és 13. évfolyam közötti szakmai szakadékot. 
+                    A backend programozás során nem csak kódot írunk, hanem rendszereket tervezünk. Megtanulod, hogyan kezelj adatokat, 
+                    hogyan építs biztonságos végpontokat, és hogyan kommunikálj profi módon az adatbázisokkal.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-8 mb-12">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-100">
+                        <h4 class="font-bold text-stone-800 mb-4 flex items-center gap-2">
+                            <span>📊</span> Tananyag Struktúra
+                        </h4>
+                        <div class="chart-container">
+                            <canvas id="mainRadarChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="flex flex-col justify-center">
+                        <h4 class="text-xl font-bold text-stone-800 mb-4">Hogyan használd ezt az útmutatót?</h4>
+                        <ul class="space-y-4">
+                            <li class="flex gap-3">
+                                <span class="bg-amber-100 text-amber-700 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">1</span>
+                                <p class="text-sm text-stone-600">Válaszd ki a modult a bal oldali menüből.</p>
+                            </li>
+                            <li class="flex gap-3">
+                                <span class="bg-amber-100 text-amber-700 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">2</span>
+                                <p class="text-sm text-stone-600">Olvasd el az elméleti összefoglalót és értelmezd a kódpéldákat.</p>
+                            </li>
+                            <li class="flex gap-3">
+                                <span class="bg-amber-100 text-amber-700 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">3</span>
+                                <p class="text-sm text-stone-600">Másold ki a kódot a saját szerkesztődbe és próbáld ki!</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script>
+    const moduleData = [
+        {
+            title: "Áttekintés & Bevezetés",
+            intro: "Mielőtt elkezdenénk, fontos látni a teljes képet. A backend fejlesztés során a szerveroldali logikára fókuszálunk, ahol a biztonság és az adatkezelés az elsődleges.",
+            sections: [
+                {
+                    heading: "A Fejlesztői Környezet",
+                    text: "A 13. évfolyamon Node.js runtime-ot, Express keretrendszert és MySQL adatbázist használunk. A kéréseket Postmannel teszteljük.",
+                    code: null
+                }
+            ]
+        },
+        {
+            title: "1. Modul: Környezet & Projekt Inicializálása",
+            intro: "Minden projekt egy üres mappával kezdődik. Meg kell tanulnunk, hogyan készítsünk professzionális projektstruktúrát.",
+            sections: [
+                {
+                    heading: "Lépések a terminálban",
+                    text: "Először létrehozzuk a package.json fájlt, majd telepítjük a szükséges csomagokat.",
+                    code: "// 1. Projekt inicializálása\nnpm init -y\n\n// 2. Szükséges csomagok telepítése\nnpm install express mysql2 dotenv\n\n// 3. Fejlesztői eszközök telepítése\nnpm install --save-dev nodemon"
+                },
+                {
+                    heading: "A .env fájl használata",
+                    text: "Soha ne hardkódoljuk a jelszavakat! Használjunk környezeti változókat.",
+                    code: "// .env fájl tartalma\nPORT=3000\nDB_HOST=localhost\nDB_USER=root\nDB_PASS=titkosjelszo\nDB_NAME=iskola_db"
+                }
+            ]
+        },
+        {
+            title: "2. Modul: Express Szerver Alapjai",
+            intro: "Az Express segítségével gyorsan és átláthatóan tudunk webes végpontokat létrehozni.",
+            sections: [
+                {
+                    heading: "Szerver konfiguráció",
+                    text: "Az alap szerver felelős a kérések fogadásáért és a JSON adatok feldolgozásáért.",
+                    code: "const express = require('express');\nconst dotenv = require('dotenv');\n\ndotenv.config();\nconst app = express();\n\n// Middleware a JSON adatokhoz\napp.use(express.json());\n\napp.get('/', (req, res) => {\n    res.json({ message: \"Szerver online!\" });\n});\n\nconst PORT = process.env.PORT || 3000;\napp.listen(PORT, () => {\n    console.log(`Szerver fut: http://localhost:${PORT}`);\n});"
+                }
+            ]
+        },
+        {
+            title: "3. Modul: MySQL & Adatbázis Kapcsolat",
+            intro: "Az adatbázis kapcsolatot érdemes külön fájlba (pl. db.js) szervezni, hogy bárhonnan elérhessük.",
+            sections: [
+                {
+                    heading: "Kapcsolati Pool készítése",
+                    text: "A pool hatékonyabb, mint az egyedi kapcsolatok, mert újrahasznosítja azokat.",
+                    code: "const mysql = require('mysql2');\nrequire('dotenv').config();\n\nconst pool = mysql.createPool({\n    host: process.env.DB_HOST,\n    user: process.env.DB_USER,\n    password: process.env.DB_PASS,\n    database: process.env.DB_NAME,\n    waitForConnections: true,\n    connectionLimit: 10\n});\n\n// Promise alapúvá alakítás\nmodule.exports = pool.promise();"
+                }
+            ]
+        },
+        {
+            title: "4. Modul: Full CRUD API megvalósítása",
+            intro: "Ebben a részben összekötjük az Express végpontokat az SQL lekérdezésekkel. Ez a backend fejlesztés szíve.",
+            sections: [
+                {
+                    heading: "CREATE (Adat felvétele)",
+                    text: "Mindig használjunk paraméterezett lekérdezéseket a biztonság érdekében!",
+                    code: "app.post('/api/diakok', async (req, res) => {\n    const { nev, osztaly } = req.body;\n    try {\n        const [result] = await db.query(\n            \"INSERT INTO diakok (nev, osztaly) VALUES (?, ?)\",\n            [nev, osztaly]\n        );\n        res.status(201).json({ id: result.insertId, message: \"Diák felvéve!\" });\n    } catch (err) {\n        res.status(500).json({ error: err.message });\n    }\n});"
+                },
+                {
+                    heading: "READ (Adatok lekérése)",
+                    text: "Az összes adat vagy egy konkrét azonosító alapján történő lekérdezés.",
+                    code: "app.get('/api/diakok', async (req, res) => {\n    try {\n        const [rows] = await db.query(\"SELECT * FROM diakok\");\n        res.json(rows);\n    } catch (err) {\n        res.status(500).send(\"Szerver hiba\");\n    }\n});"
+                }
+            ]
+        },
+        {
+            title: "5. Modul: Hibakezelés & Validáció",
+            intro: "Egy jó API nem omlik össze hibás adatok esetén, hanem pontos hibaüzenetet ad.",
+            sections: [
+                {
+                    heading: "Bemeneti adatok ellenőrzése",
+                    text: "Mielőtt az adatbázishoz nyúlnánk, ellenőrizzük, hogy minden kötelező mező megvan-e.",
+                    code: "if (!req.body.nev || req.body.nev.length < 3) {\n    return res.status(400).json({ \n        message: \"A név kötelező és legalább 3 karakter!\" \n    });\n}"
+                }
+            ]
+        }
+    ];
+
+    function loadModule(index) {
+        const container = document.getElementById('module-container');
+        const data = moduleData[index];
+
+        // Update UI
+        document.querySelectorAll('.nav-link').forEach(btn => btn.classList.remove('module-active'));
+        document.getElementById(`btn-${index}`).classList.add('module-active');
+
+        if (index === 0) {
+            // Restore Initial State
+            container.innerHTML = `
+                <div id="content-intro" class="max-w-4xl">
+                    <h2 class="text-4xl font-extrabold text-stone-900 mb-6">Üdvözöllek a Backend Világában!</h2>
+                    <p class="text-lg text-stone-600 mb-8 leading-relaxed">
+                        Ez a felület azért jött létre, hogy segítsen neked áthidalni a 12. és 13. évfolyam közötti szakmai szakadékot...
+                    </p>
+                    <div class="grid md:grid-cols-2 gap-8 mb-12">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-100">
+                            <h4 class="font-bold text-stone-800 mb-4">📊 Tananyag Struktúra</h4>
+                            <div class="chart-container"><canvas id="mainRadarChart"></canvas></div>
+                        </div>
+                        <div class="flex flex-col justify-center">
+                            <h4 class="text-xl font-bold text-stone-800 mb-4 italic">Kezdj bele a tanulásba!</h4>
+                            <p class="text-stone-500 text-sm">Kattints a modulokra a részletekért.</p>
+                        </div>
+                    </div>
+                </div>`;
+            initMainChart();
+            return;
+        }
+
+        let sectionsHTML = data.sections.map(s => `
+            <div class="mb-10">
+                <h3 class="text-2xl font-bold text-stone-800 mb-3">${s.heading}</h3>
+                <p class="text-stone-600 mb-4">${s.text}</p>
+                ${s.code ? `<div class="code-block whitespace-pre">${s.code}</div>` : ''}
+            </div>
+        `).join('');
+
+        container.innerHTML = `
+            <div class="max-w-4xl animate-in fade-in duration-500">
+                <span class="text-purple-600 font-bold tracking-tighter uppercase text-sm">Tananyag részletező</span>
+                <h2 class="text-4xl font-extrabold text-stone-900 mb-4">${data.title}</h2>
+                <p class="text-xl text-stone-500 mb-12 border-l-4 border-amber-400 pl-4 py-2">${data.intro}</p>
+                ${sectionsHTML}
+                <div class="mt-12 p-6 bg-white rounded-2xl border border-stone-200">
+                    <h4 class="font-bold mb-4">✅ Modul Check-list</h4>
+                    <ul class="space-y-2 text-sm text-stone-600">
+                        <li class="flex items-center gap-2"><span>✔</span> Elolvastam az elméletet</li>
+                        <li class="flex items-center gap-2"><span>✔</span> Kipróbáltam a kódpéldát</li>
+                        <li class="flex items-center gap-2"><span>✔</span> Megértettem az összefüggéseket</li>
+                    </ul>
+                </div>
+            </div>
+        `;
+    }
+
+    function initMainChart() {
+        const ctx = document.getElementById('mainRadarChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['JS Alapok', 'Express', 'SQL tudás', 'API Tervezés', 'Adatbiztonság'],
+                datasets: [{
+                    label: 'Szükséges készségszint',
+                    data: [90, 80, 85, 75, 70],
+                    fill: true,
+                    backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                    borderColor: 'rgb(139, 92, 246)',
+                    pointBackgroundColor: 'rgb(139, 92, 246)',
+                    pointBorderColor: '#fff',
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                elements: { line: { borderWidth: 3 } },
+                plugins: { legend: { display: false } },
+                scales: { r: { angleLines: { display: true }, suggestMin: 0, suggestMax: 100 } }
+            }
+        });
+    }
+
+    // Start Up
+    window.onload = () => {
+        initMainChart();
+        document.getElementById('btn-0').classList.add('module-active');
+    };
+</script>
+
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backend Programozás Portál</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .hero-gradient { background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">🚀</span>
+                    <span class="font-bold text-xl text-slate-900 tracking-tight">Backend<span class="text-indigo-600">Mastery</span></span>
+                </div>
+                <div class="hidden md:flex space-x-6">
+                    <a href="index.html" class="text-slate-600 hover:text-indigo-600 font-medium transition-colors">Áttekintés</a>
+                    <a href="minta_feladat.html" class="text-slate-600 hover:text-indigo-600 font-medium transition-colors">Gyakorlat</a>
+                    <a href="tudastar.html" class="text-slate-600 hover:text-indigo-600 font-medium transition-colors">Elmélet</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero-gradient text-white py-16 px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-4xl md:text-5xl font-extrabold mb-6">Szoftverfejlesztő & Tesztelő</h1>
+            <p class="text-indigo-100 text-lg md:text-xl mb-8 leading-relaxed">
+                Felkészítő tananyag a 13. évfolyam backend moduljaihoz. 
+                Sajátítsd el a Node.js, Express és MySQL alapjait strukturáltan.
+            </p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <span class="bg-indigo-500/30 px-4 py-2 rounded-full border border-indigo-400/50 text-sm">Node.js</span>
+                <span class="bg-indigo-500/30 px-4 py-2 rounded-full border border-indigo-400/50 text-sm">Express</span>
+                <span class="bg-indigo-500/30 px-4 py-2 rounded-full border border-indigo-400/50 text-sm">MySQL</span>
+                <span class="bg-indigo-500/30 px-4 py-2 rounded-full border border-indigo-400/50 text-sm">REST API</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-16 flex-grow">
+        <div class="grid md:grid-cols-3 gap-8">
+            
+            <a href="index.html" class="card-hover bg-white rounded-2xl overflow-hidden border border-slate-200 flex flex-col">
+                <div class="h-3 bg-amber-500"></div>
+                <div class="p-8 flex-grow">
+                    <div class="text-amber-600 font-bold text-xs uppercase mb-2 tracking-widest">1. FÁZIS</div>
+                    <h2 class="text-2xl font-bold text-slate-900 mb-4">Interaktív Alapozó</h2>
+                    <p class="text-slate-600 mb-6 text-sm leading-relaxed">
+                        Ismerkedés a környezettel, a HTTP kérésekkel és a CRUD mátrixszal vizuális dashboard segítségével.
+                    </p>
+                    <div class="flex items-center text-amber-600 font-semibold text-sm">
+                        Megnyitás <span class="ml-2">→</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="minta_feladat.html" class="card-hover bg-white rounded-2xl overflow-hidden border border-slate-200 flex flex-col">
+                <div class="h-3 bg-purple-600"></div>
+                <div class="p-8 flex-grow">
+                    <div class="text-purple-600 font-bold text-xs uppercase mb-2 tracking-widest">2. FÁZIS</div>
+                    <h2 class="text-2xl font-bold text-slate-900 mb-4">Mintapéldatár</h2>
+                    <p class="text-slate-600 mb-6 text-sm leading-relaxed">
+                        Gyakorlati kódminták, szerver beállítások és adatbázis lekérdezések lépésről lépésre kidolgozva.
+                    </p>
+                    <div class="flex items-center text-purple-600 font-semibold text-sm">
+                        Megnyitás <span class="ml-2">→</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="tudastar.html" class="card-hover bg-white rounded-2xl overflow-hidden border border-slate-200 flex flex-col">
+                <div class="h-3 bg-emerald-600"></div>
+                <div class="p-8 flex-grow">
+                    <div class="text-emerald-600 font-bold text-xs uppercase mb-2 tracking-widest">3. FÁZIS</div>
+                    <h2 class="text-2xl font-bold text-slate-900 mb-4">Elméleti Tudástár</h2>
+                    <p class="text-slate-600 mb-6 text-sm leading-relaxed">
+                        Mélymerülés az architektúrába: Event Loop, HTTP protokoll, Middleware és adatbázis-biztonság.
+                    </p>
+                    <div class="flex items-center text-emerald-600 font-semibold text-sm">
+                        Megnyitás <span class="ml-2">→</span>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 py-10 px-4">
+        <div class="max-w-7xl mx-auto text-center">
+            <p class="text-sm">BGSZC Pestszentlőrinci Technikum - 13. évfolyam előkészítő</p>
+            <p class="mt-2 text-xs font-mono">2026. május - Szakmai anyag szoftverfejlesztőknek</p>
+        </div>
+    </footer>
+
+</body>
+</html>
